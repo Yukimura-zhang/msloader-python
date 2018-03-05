@@ -28,6 +28,8 @@ class RtmpThread(threading.Thread):
     def __init__(self, threadid, url):
         threading.Thread.__init__(self)
         self.__thread_id = threadid
+        self.__recved_length = 0
+        self.__quit = False
 
         try:
             # Create a connection
@@ -59,3 +61,6 @@ class RtmpThread(threading.Thread):
 
     def is_vaild(self):
         return self.__vaild
+
+    def getodsize(self):
+        return self.__recved_length

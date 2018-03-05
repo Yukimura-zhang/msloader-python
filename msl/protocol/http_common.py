@@ -10,7 +10,6 @@ import threading
 import requests
 from msl.mslcore import mslloger
 
-
 class HttpCommonThread(threading.Thread):
     __logger = mslloger()
     __recved_length = 0
@@ -27,6 +26,8 @@ class HttpCommonThread(threading.Thread):
         self.__url = url
         self.__thread_id = threadid
         self.__title = title
+        self.__recved_length = 0
+        self.__quit = False
 
         if simu_attrib == {}:
             headers = ''
@@ -69,3 +70,6 @@ class HttpCommonThread(threading.Thread):
 
     def is_vaild(self):
         return self.__vaild
+
+    def getodsize(self):
+        return self.__recved_length

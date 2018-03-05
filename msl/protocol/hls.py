@@ -25,6 +25,7 @@ class HLSThread(threading.Thread):
     __m3u8parser = M3U8Parser('')
     __hls_type = LIVE
     __m3u8_sequence = 0
+    __recved_length = 0
     __thread_id = 0
     __m3u8_target_duration = 0
     __quit = False
@@ -33,10 +34,13 @@ class HLSThread(threading.Thread):
     def __init__(self, threadid, url, type_=LIVE):
         threading.Thread.__init__(self)
         self.__thread_id = threadid
+        self.__recved_length = 0
         self.__hls_type = type_
         self.__url = url
         lastslash = self.__url.rfind('/')
         self.__urlroot = self.__url[:lastslash] + '/'
+        self.__quit = False
+        self.__vaild = True
 
     def __request_slice(self, playlist):
         for slice in playlist:
@@ -54,12 +58,12 @@ class HLSThread(threading.Thread):
                     break
 
             # recv slice
-            slicelength = 0
             while self.__quit != True:
                 recvlen = len(slice_r.raw.read(1024 * 1024))
                 if 0 < recvlen:
-                    slicelength += recvlen
-                    self.__logger.debug('[HLSThread] [%d] hls slice read %s bytes.', self.__thread_id, slicelength)
+                    self.__recved_length += recvlen
+                    self.__logger.debug('[HLSThread] [%d] hls slice read %s bytes.', self.__thread_id,
+                                        self.__recved_length)
                 else:
                     self.__logger.debug('[HLSThread] [%d] hls slice read %s bytes. close connection.', self.__thread_id,
                                         recvlen)
@@ -125,3 +129,6 @@ class HLSThread(threading.Thread):
 
     def is_vaild(self):
         return self.__vaild
+
+    def getodsize(self):
+        return self.__recved_length

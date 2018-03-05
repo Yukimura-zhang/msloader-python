@@ -20,11 +20,14 @@ class plugin_wrapper(object):
     __url = ''
     __tlist = []
     __title = ''
+    __odsize = 0
 
     def __init__(self, url, title, clicount, simu_attrib={}, simu_dic={}):
         self.__clicount = int(clicount)
         self.__url = url
         self.__title = title
+        self.__tlist = []
+        self.__odsize = 0
 
         if self.__title.find('@rtmp') > 0:
             for index in range(self.__clicount):
@@ -68,8 +71,21 @@ class plugin_wrapper(object):
                     flv.start()
                     self.__tlist.append(flv)
 
+    def getruninfo(self):
+        # return title,alive cnt,and total output size
+        cnt = 0
+        odsize = 0
+        for flv in self.__tlist:
+            if flv.is_alive():
+                cnt += 1
+            #do getodsize() even thread not alive
+            odsize += flv.getodsize()
+
+        self.__odsize = odsize
+        return self.__title, cnt, self.__odsize
+
     def quittest(self):
         for flv in self.__tlist:
             flv.quit()
             flv.join()
-        print('plugin_wrapper for [%s] quit' %(self.__title))
+        print('plugin_wrapper for [%s] quit' % (self.__title))

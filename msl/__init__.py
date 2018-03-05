@@ -15,10 +15,12 @@ from msl.mslcore.mslloger import mslloger_init
 from msl.plugins import *
 
 mslconfigure = MSLConfigure('./config/msloader.xml')
+sleept = 5
 
 
 def test_main():
     global mslconfigure
+    global sleept
 
     comdic = mslconfigure.get_common()
     mslloger_init(comdic["loglevel"])
@@ -47,9 +49,21 @@ def test_main():
         return
 
     if re.compile("^[0-9]*$").match(testtime):
-        time.sleep(int(testtime))
+        timeout = int(testtime)
     else:
-        time.sleep(600)
+        timeout = 600
+
+    duration = 0
+    while duration <  timeout:
+        mint = min(sleept, (timeout - duration))
+        time.sleep(mint)
+        duration += mint
+
+        for p in vaild_simus:
+            title, cnt, tsize = p.getruninfo()
+            print('plugin_wrapper for [%s] have [%d]threads alive,total data szie = [%d],bitrate is [%d kbps]' \
+                  % (title, cnt, tsize,(tsize / duration / 1000)))
+        print('==================================================================')
 
     for p in vaild_simus:
         p.quittest()

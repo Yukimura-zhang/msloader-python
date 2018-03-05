@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# pack msloader-python
+#
+# Yukimura.Zhang
+
+# test git log
+git log -1 --format=%h
+if [ $? -eq 0 ]; then
+    echo 'This is a git repo'
+else
+    # As we want to pack the git commit hash into msloader packet
+    # you should execute this script in a git repo
+    echo 'Fuck! This is not a git repo!!!!'
+    exit
+fi
+
+RELEASE_VERSION=$(git describe --abbrev=0 --tags)"-"$(git log -1 --format=%h)
+
+if [ -f "__main__.py" ]; then
+	cd ..
+	echo "--------------------------------------------------------------------------------"
+	echo "msloader-python pack to 'msloader-python-$RELEASE_VERSION.tar.gz'"
+	echo "--------------------------------------------------------------------------------"
+	tar cvzf msloader-python-$RELEASE_VERSION.tar.gz msloader-python/ --exclude .git*  --exclude *.pyc \
+	--exclude *.log --exclude .idea --exclude __pycache__ --exclude pack
+	echo "--------------------------------------------------------------------------------"
+	exit
+else
+    echo
+    echo Pack error : Please change dir to msloader-python directory, and pack.
+    echo
+    exit
+fi

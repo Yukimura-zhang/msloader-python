@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<msloader>
+    <common>
+        <loglevel>DEBUG</loglevel>
+		<testtime>15</testtime>
+    </common>
+
+	<simulator enable="false" plugin="live@flv@http">
+		<url>http://172.28.40.113/live/fxtv3?fmt=h264_800k_flv</url>
+		<number>5</number>
+	</simulator>
+	
+	<simulator enable="false" plugin="live@hls@http">
+		<url>http://192.168.137.137/live/fxtv3?fmt=h264_800k_flv&amp;trs=hls_ts</url>
+		<number>5</number>
+	</simulator>
+	
+	<simulator enable="false" plugin="live@flv@rtmp">
+		<url>rtmp://192.168.137.137/live/3flv</url>
+		<number>5</number>
+	</simulator>
+	
+	<simulator enable="false" plugin="shift@flv@http">
+		<url>http://172.28.40.113/live/fxtv3?fmt=h264_800k_flv&amp;starttime=1520143202619&amp;endtime=1520143483539</url>
+		<number>5</number>
+	</simulator>
+	
+	<simulator enable="false" plugin="vod@mp4seek@http" seek="range">
+		<range>4096000-8192000</range>
+		<url>http://192.168.137.137/vod/3s.mp4</url>
+		<number>5</number>
+	</simulator>
+	
+	<simulator enable="true" plugin="vod@mp4normal@http">
+		<!-- 除了range请求，还有其他seek方法 比如startime/endtime以及timecode,默认ms为单位 -->
+		<!-- http://192.168.137.137/vod/3s.mp4?starttime=6000&amp;endtime=300000 -->
+		<!-- http://192.168.137.137/vod/3s.mp4?timecode=60000 -->
+		<url>http://192.168.137.137/vod/3s.mp4?starttime=6000&amp;endtime=300000</url>
+		<number>5</number>
+	</simulator>
+
+</msloader>

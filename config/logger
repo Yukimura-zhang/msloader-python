@@ -1,0 +1,30 @@
+#
+# logger
+# @reference - https://docs.python.org/3/library/logging.html
+# python logging configuration file.
+#
+
+# --- loggers --- #
+[loggers]
+keys=root
+[logger_root]
+level=DEBUG
+handlers=handler00
+
+# --- handlers --- #
+[handlers]
+keys=handler00
+[handler_handler00]
+#class=StreamHandler # console
+class=logging.handlers.RotatingFileHandler
+level=DEBUG
+formatter=formatter00
+# If class is StreamHandler, the 'msloader.log' should be 'sys.stdout' or 'sys.stderr'
+args=('msloader.log',)
+
+# --- formatters --- #
+[formatters]
+keys=formatter00
+[formatter_formatter00]
+format=[%(asctime)s] %(filename)s[%(lineno)d] %(name)s:%(levelname)s %(message)s
+datefmt=%a, %d %b %Y %H:%M:%S

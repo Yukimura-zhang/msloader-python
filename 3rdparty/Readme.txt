@@ -6,15 +6,21 @@
 tar xzvf rtmpdump-2.3.tgz
 cd rtmpdump-2.3
 make
-make install			#使用超级用户权限来安装，在centos中本库的默认安装路径为/use/local/lib
+#使用超级用户权限来安装，在centos中本库的默认安装路径为/use/local/lib
+make install
 ldconfig
 
-2.安装requests包
+2.安装cffi包
+tar xzvf cffi-1.11.5.tar.gz
+cd cffi-1.11.5
+python3 setup.py install
+
+3.安装requests包
 tar xzvf kennethreitz-requests-v2.8.1-45-g2128321.tar.gz
 cd kennethreitz-requests-2128321
 python3 setup.py install
 
-3.安装python-librtmp包
+4.安装python-librtmp包
 tar xzvf python-librtmp.tar.gz
 cd python-librtmp
 python3 setup.py install

@@ -15,7 +15,7 @@ from msl.mslcore.mslloger import mslloger_init
 from msl.plugins import *
 
 mslconfigure = MSLConfigure('./config/msloader.xml')
-sleept = 5
+sleept = 10
 
 
 def test_main():
@@ -54,15 +54,15 @@ def test_main():
         timeout = 600
 
     duration = 0
-    while duration <  timeout:
+    while duration < timeout:
         mint = min(sleept, (timeout - duration))
         time.sleep(mint)
         duration += mint
 
         for p in vaild_simus:
-            title, cnt, tsize = p.getruninfo()
+            title, cnt, tsize, delta = p.getruninfo()
             print('plugin_wrapper for [%s] have [%d]threads alive,total data szie = [%d],bitrate is [%d kbps]' \
-                  % (title, cnt, tsize,(tsize / duration / 1000)))
+                  % (title, cnt, tsize, (delta / mint / 1000)))
         print('==================================================================')
 
     for p in vaild_simus:

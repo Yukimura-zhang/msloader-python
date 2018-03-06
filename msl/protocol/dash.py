@@ -21,7 +21,7 @@ class DashThread(threading.Thread):
     __logger = mslloger()
     __url = ''
     __urlroot = ''
-    __mpdparser = None
+    __mpdparser = MPDParser('')
     __dash_type = LIVE
     __mpd_update_period = 0
     __recved_length = 0
@@ -58,14 +58,17 @@ class DashThread(threading.Thread):
 
             # recv slice
             while self.__quit != True:
-                recvlen = len(slice_r.raw.read(1024 * 1024))
-                if 0 < recvlen:
-                    self.__recved_length += recvlen
-                    self.__logger.debug('[DashThread] [%d] dash slice read %s bytes.', self.__thread_id,
-                                        self.__recved_length)
-                else:
-                    self.__logger.debug('[DashThread] [%d] dash slice read %s bytes. close connection.',
-                                        self.__thread_id, recvlen)
+                try:
+                    recvlen = len(slice_r.raw.read(4096))
+                    if 0 < recvlen:
+                        self.__recved_length += recvlen
+                        self.__logger.debug('[DashThread] [%d] dash slice read %s bytes.', self.__thread_id,
+                                            self.__recved_length)
+                    else:
+                        self.__logger.debug('[DashThread] [%d] dash slice read %s bytes. close connection.',
+                                            self.__thread_id, recvlen)
+                        break
+                except:
                     break
 
             slice_r.close()
@@ -82,17 +85,25 @@ class DashThread(threading.Thread):
                 # recv mpd
                 mpd = ''
                 while self.__quit != True:
-                    current_recv = mpd_r.raw.read(102400)
-                    current_recv_len = len(current_recv)
+                    try:
+                        current_recv = mpd_r.raw.read(4096)
+                        current_recv_len = len(current_recv)
 
-                    if 0 < current_recv_len:
-                        mpd += str(current_recv.decode('utf-8'))
-                    else:
+                        if 0 < current_recv_len:
+                            mpd += str(current_recv.decode('utf-8'))
+                        else:
+                            break
+                    except:
                         break
                 mpd_r.close()
 
                 # parse mpd
-                self.__mpdparser = MPDParser(mpd)
+                if not self.__mpdparser.update(mpd):
+                    if self.__quit != True:
+                        time.sleep(1)
+                        continue
+                    else:
+                        break
 
                 # request slice
                 self.__logger.info('[DashThread] [%d] get mpd :\n%s', self.__thread_id, mpd)

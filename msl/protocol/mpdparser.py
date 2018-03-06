@@ -110,10 +110,24 @@ class MPDParser(object):
     __update_period = 5
     __video_table = []
     __audio_table = []
+    __mpd = ''
 
     def __init__(self, mpd):
-        self.__parse(mpd)
+        self.update(mpd)
         return
+
+    def update(self, mpd):
+        self.__reset()
+        if mpd == '':
+            return False
+        self.__mpd = mpd
+        return self.__parse(mpd)
+
+    def __reset(self):
+        self.__update_period = 5
+        self.__video_table = []
+        self.__audio_table = []
+        self.__mpd = ''
 
     def __parse(self, mpd):
         try:
@@ -127,10 +141,11 @@ class MPDParser(object):
                 elmdic = elm.attrib
                 self.__video_table.append('/slice/' + elmdic["t"] + '.m4v')
                 self.__audio_table.append('/slice/' + elmdic["t"] + '.m4a')
+            return True
 
         except:
             self.__logger.error("[MPDParser] __parse failed.")
-            return
+            return False
 
     def get_update_period(self):
         return self.__update_period

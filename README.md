@@ -1,5 +1,3 @@
-msloader-python
-
 ## 安装
 
 - 在python3.6下完成测试，请安装好python3.6的解释器；

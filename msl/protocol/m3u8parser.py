@@ -24,7 +24,7 @@ class M3U8Parser(object):
     __sequence = ''
 
     def __init__(self, m3u8):
-        self.update(m3u8, False)
+        self.update(m3u8)
 
     def __reset(self):
         self.__m3u8 = ""
@@ -69,12 +69,15 @@ class M3U8Parser(object):
 
         self.__parse_success = True
 
-    def update(self, m3u8, verify=True):
+    def update(self, m3u8=''):
         self.__reset()
+
+        if m3u8 ==' ':
+            return False
         self.__m3u8 = m3u8
-        if verify:
-            if not self.__verify():
-                return False
+
+        if not self.__verify():
+            return False
         self.__parse()
         return True
 

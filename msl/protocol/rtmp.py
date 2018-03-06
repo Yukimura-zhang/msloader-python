@@ -24,16 +24,21 @@ class RtmpThread(threading.Thread):
     __thread_id = 0
     __quit = False
     __vaild = True
+    __url = ''
 
     def __init__(self, threadid, url):
         threading.Thread.__init__(self)
         self.__thread_id = threadid
         self.__recved_length = 0
         self.__quit = False
+        self.__url = url
 
+        self.__private_connect()
+
+    def __private_connect(self):
         try:
             # Create a connection
-            self.__rtmp_conn = librtmp.RTMP(url, live=True, timeout=10)
+            self.__rtmp_conn = librtmp.RTMP(self.__url, live=True, timeout=10)
             # Attempt to connect
             self.__rtmp_conn.connect()
             # Get a file-like object to access to the stream
@@ -46,11 +51,15 @@ class RtmpThread(threading.Thread):
     def run(self):
         while self.__quit != True:
             try:
-                data = self.__rtmp_stream.read(4096)
-                self.__recved_length += len(data)
-                self.__logger.debug('[RtmpThread] [%d] rtmp have read %s bytes.',
-                                    self.__thread_id, self.__recved_length)
-
+                recvlen = len(self.__rtmp_stream.read(4096))
+                if recvlen > 0:
+                    self.__recved_length += recvlen
+                    self.__logger.debug('[RtmpThread] [%d] rtmp have read %s bytes.',
+                                        self.__thread_id, self.__recved_length)
+                else:
+                    self.__logger.debug('[RtmpThread] [%d] read %s bytes. close connection.',
+                                        self.__thread_id, recvlen)
+                    break
             except:
                 self.__logger.debug('[RtmpThread] [%d] rtmp read error.', self.__thread_id)
                 break

@@ -72,17 +72,19 @@ class plugin_wrapper(object):
                     self.__tlist.append(flv)
 
     def getruninfo(self):
-        # return title,alive cnt,and total output size
+        # return title,alive cnt,total output size and dalta
         cnt = 0
         odsize = 0
+        delta = 0
         for flv in self.__tlist:
             if flv.is_alive():
                 cnt += 1
-            #do getodsize() even thread not alive
+            # do getodsize() even thread not alive
             odsize += flv.getodsize()
 
+        delta = odsize - self.__odsize
         self.__odsize = odsize
-        return self.__title, cnt, self.__odsize
+        return self.__title, cnt, self.__odsize, delta
 
     def quittest(self):
         for flv in self.__tlist:

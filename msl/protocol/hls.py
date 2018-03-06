@@ -59,14 +59,17 @@ class HLSThread(threading.Thread):
 
             # recv slice
             while self.__quit != True:
-                recvlen = len(slice_r.raw.read(1024 * 1024))
-                if 0 < recvlen:
-                    self.__recved_length += recvlen
-                    self.__logger.debug('[HLSThread] [%d] hls slice read %s bytes.', self.__thread_id,
-                                        self.__recved_length)
-                else:
-                    self.__logger.debug('[HLSThread] [%d] hls slice read %s bytes. close connection.', self.__thread_id,
-                                        recvlen)
+                try:
+                    recvlen = len(slice_r.raw.read(4096))
+                    if 0 < recvlen:
+                        self.__recved_length += recvlen
+                        self.__logger.debug('[HLSThread] [%d] hls slice read %s bytes.', self.__thread_id,
+                                            self.__recved_length)
+                    else:
+                        self.__logger.debug('[HLSThread] [%d] hls slice read %s bytes. close connection.', self.__thread_id,
+                                            recvlen)
+                        break
+                except:
                     break
             slice_r.close()
 
@@ -93,19 +96,25 @@ class HLSThread(threading.Thread):
                 m3u8_r = requests.get(self.__url, allow_redirects=True, stream=True, timeout=10)
                 m3u8 = ''
                 while self.__quit != True:
-                    current_recv = m3u8_r.raw.read(102400)
-                    current_recv_len = len(current_recv)
-
-                    if 0 < current_recv_len:
-                        m3u8 += str(current_recv.decode('utf-8'))
-                    else:
+                    try:
+                        current_recv = m3u8_r.raw.read(4096)
+                        current_recv_len = len(current_recv)
+                        if 0 < current_recv_len:
+                            m3u8 += str(current_recv.decode('utf-8'))
+                        else:
+                            break
+                    except:
                         break
                 m3u8_r.close()
 
                 # parse m3u8
                 if not self.__m3u8parser.update(m3u8):
-                    time.sleep(1)
-                    continue
+                    if self.__quit != True:
+                        time.sleep(1)
+                        continue
+                    else:
+                        break
+
 
                 # request slice
                 self.__logger.info('[HLSThread] [%d] get m3u8 :\n%s', self.__thread_id, m3u8)

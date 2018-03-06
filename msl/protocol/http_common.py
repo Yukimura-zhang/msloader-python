@@ -20,6 +20,7 @@ class HttpCommonThread(threading.Thread):
     __quit = False
     __vaild = True
     __title = ''
+    __headers = ''
 
     def __init__(self, threadid, url, title, simu_attrib={}, simu_dic={}):
         threading.Thread.__init__(self)
@@ -30,20 +31,23 @@ class HttpCommonThread(threading.Thread):
         self.__quit = False
 
         if simu_attrib == {}:
-            headers = ''
+            self.__headers = ''
         else:
             try:
                 if simu_attrib['seek'] == 'range':
                     self.__range = simu_dic['range']
-                    headers = {'Range': self.__range}
+                    self.__headers = {'Range': self.__range}
                 else:
-                    headers = ''
+                    self.__headers = ''
             except:
-                headers = ''
+                self.__headers = ''
 
-        if headers != '':
+                self.__private_connect()
+
+    def __private_connect(self):
+        if self.__headers != '':
             try:
-                self.__r = requests.get(self.__url, headers=headers, stream=True, timeout=10)
+                self.__r = requests.get(self.__url, headers=self.__headers, stream=True, timeout=10)
             except:
                 self.__vaild = False
         else:
@@ -54,15 +58,19 @@ class HttpCommonThread(threading.Thread):
 
     def run(self):
         while self.__quit != True:
-            recvlen = len(self.__r.raw.read(102400))
-            if 0 < recvlen:
-                self.__recved_length += recvlen
-                self.__logger.debug('[HttpCommonThread] [%d] [%s] read %s bytes.',
-                                    self.__thread_id, self.__title, self.__recved_length)
-            else:
-                self.__logger.debug('[HttpCommonThread] [%d] [%s] read %s bytes. close connection.',
-                                    self.__thread_id, self.__title, recvlen)
+            try:
+                recvlen = len(self.__r.raw.read(4096))
+                if 0 < recvlen:
+                    self.__recved_length += recvlen
+                    self.__logger.debug('[HttpCommonThread] [%d] [%s] read %s bytes.',
+                                        self.__thread_id, self.__title, self.__recved_length)
+                else:
+                    self.__logger.debug('[HttpCommonThread] [%d] [%s] read %s bytes. close connection.',
+                                        self.__thread_id, self.__title, recvlen)
+                    break
+            except:
                 break
+
         self.__r.close()
 
     def quit(self):

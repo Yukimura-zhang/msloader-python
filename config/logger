@@ -16,7 +16,8 @@ handlers=handler00
 keys=handler00
 [handler_handler00]
 #class=StreamHandler # console
-class=logging.handlers.RotatingFileHandler
+#class=logging.handlers.RotatingFileHandler
+class=handlers.ConcurrentRotatingFileHandler
 level=DEBUG
 formatter=formatter00
 # If class is StreamHandler, the 'msloader.log' should be 'sys.stdout' or 'sys.stderr'

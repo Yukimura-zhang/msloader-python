@@ -4,8 +4,11 @@
     <common>
         <loglevel>DEBUG</loglevel>
         <testtime>30</testtime>
+        <!--workernum should not bigger than cpu core num -->
+        <workernum>2</workernum>
     </common>
 
+    <!--Simulator definition for per worker -->
     <simulator enable="false" plugin="live@flv@http">
         <url>http://172.28.40.113/live/fxtv3?fmt=h264_800k_flv</url>
         <number>5</number>

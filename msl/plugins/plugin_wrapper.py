@@ -22,7 +22,7 @@ class plugin_wrapper(object):
     __title = ''
     __odsize = 0
 
-    def __init__(self, url, title, clicount, simu_attrib={}, simu_dic={}):
+    def __init__(self, pid, url, title, clicount, simu_attrib={}, simu_dic={}):
         self.__clicount = int(clicount)
         self.__url = url
         self.__title = title
@@ -90,4 +90,4 @@ class plugin_wrapper(object):
         for flv in self.__tlist:
             flv.quit()
             flv.join()
-        print('plugin_wrapper for [%s] quit' % (self.__title))
+        print('[Process:%s] plugin_wrapper for [%s] quit' % (self.__title, pid))

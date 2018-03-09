@@ -7,8 +7,11 @@ msloader
 @author: Yukimura.Zhang
 '''
 
-import logging
-import logging.config
+import logging,logging.config
+import cloghandler
+#pip install ConcurrentLogHandler #
+# for "have multiple instances all running at the same time and writing to the same log file"
+
 
 logging.config.fileConfig(fname="config/logger")
 __logger = logging.getLogger()
